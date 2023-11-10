@@ -138,8 +138,11 @@ fun MainScreen(films: State<List<TmdbMovie>>, series: State<List<TmdbSerie>>, ac
                                  // Action à exécuter lorsque la touche "Entrée" est pressée
                                  if(nc.currentBackStackEntry?.destination?.route=="films"){vm.searchFilm(searchText = searchText)
                                  searchText=""}
-                                 else if (nc.currentBackStackEntry?.destination?.route=="series"){vm.searchSerie(searchText = searchText) }
-                                 else if (nc.currentBackStackEntry?.destination?.route=="acteurs"){vm.searchActor(searchText = searchText) }
+                                 else if (nc.currentBackStackEntry?.destination?.route=="series"){vm.searchSerie(searchText = searchText)
+                                     searchText=""}
+                                 else if (nc.currentBackStackEntry?.destination?.route=="acteurs"){vm.searchActor(searchText = searchText)
+                                     searchText=""}
+
                                  searchOpened = false // Fermer la barre de recherche après la recherche
                              }
                          ),
