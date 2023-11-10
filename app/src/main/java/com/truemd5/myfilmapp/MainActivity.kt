@@ -33,7 +33,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.truemd5.myfilmapp.configurations.ConfigViewModel
+import com.truemd5.myfilmapp.retrofit.TmdbActor
 import com.truemd5.myfilmapp.retrofit.TmdbMovie
+import com.truemd5.myfilmapp.retrofit.TmdbSerie
 import com.truemd5.myfilmapp.scaffold.ActeursView
 import com.truemd5.myfilmapp.scaffold.FilmsView
 import com.truemd5.myfilmapp.scaffold.SeriesView
@@ -46,9 +48,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         setContent {
 
-            viewModel.getMovies()
+
 
             val navControllerMere = rememberNavController()
 
@@ -62,8 +65,10 @@ class MainActivity : ComponentActivity() {
                 }
                 composable("accueil") {
                     // Contenu de la deuxième destination
-
-                    MainScreen(viewModel.movies.collectAsState().value)
+                    viewModel.getLastMovies()
+                    viewModel.getLastActors()
+                    viewModel.getLastSeries()
+                    MainScreen(viewModel.movies.collectAsState().value, viewModel.series.collectAsState().value,viewModel.actors.collectAsState().value)
                 }
 
             }
@@ -81,7 +86,7 @@ class MainActivity : ComponentActivity() {
 //MainScreen est le Scaffold
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(filmsdefaut : List<TmdbMovie>) {
+fun MainScreen(films : List<TmdbMovie>, series : List<TmdbSerie>, actors : List<TmdbActor>) {
 
 
     val navControllerFille = rememberNavController()
@@ -219,18 +224,18 @@ fun MainScreen(filmsdefaut : List<TmdbMovie>) {
 
                 NavHost(navController = navControllerFille, startDestination = "films") {
                     composable("films") {
-                        FilmsView(nc=navControllerFille, listeFilms = filmsdefaut )
+                        FilmsView(nc=navControllerFille, listeFilms = films )
                         // Contenu de la première destination
                     }
                     composable("series") {
                         // Contenu de la deuxième destination
 
-                        SeriesView(navControllerFille)
+                        SeriesView(nc=navControllerFille, listeSeries = series)
                     }
                     composable("acteurs") {
                         // Contenu de la deuxième destination
 
-                        ActeursView(navControllerFille)
+                        ActeursView(nc=navControllerFille, listeActeurs = actors)
                     }
                     composable("descriptionfilm") {
                         // Contenu de la  destination
