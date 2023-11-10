@@ -48,6 +48,23 @@ class ConfigViewModel: ViewModel() {
         }
     }
 
+    fun searchFilm(searchText : String) {
+        viewModelScope.launch {
+            movies.value = api.searchmovies(api_key, searchText).results
+
+        }
+    }
+    fun searchSerie(searchText : String) {
+        viewModelScope.launch {
+            series.value = api.searchseries(api_key, searchText).results
+        }
+    }
+    fun searchActor(searchText : String) {
+        viewModelScope.launch {
+            actors.value = api.searchpersons(api_key, searchText).results
+        }
+    }
+
 
 }
 

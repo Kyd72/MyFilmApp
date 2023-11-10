@@ -15,7 +15,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.twotone.DesktopWindows
 import androidx.compose.material.icons.twotone.Movie
@@ -27,8 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -54,6 +60,8 @@ class MainActivity : ComponentActivity() {
 
 
             val navControllerMere = rememberNavController()
+            val navControllerScaffold = rememberNavController()
+
 
             NavHost(navController = navControllerMere, startDestination = "commencer") {
                 composable("commencer") {
@@ -68,7 +76,7 @@ class MainActivity : ComponentActivity() {
                     viewModel.getLastMovies()
                     viewModel.getLastActors()
                     viewModel.getLastSeries()
-                    MainScreen(viewModel.movies.collectAsState().value, viewModel.series.collectAsState().value,viewModel.actors.collectAsState().value)
+                    MainScreen(viewModel.movies.collectAsState(), viewModel.series.collectAsState(),viewModel.actors.collectAsState(),navControllerScaffold, viewModel)
                 }
 
             }
@@ -86,10 +94,12 @@ class MainActivity : ComponentActivity() {
 //MainScreen est le Scaffold
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(films : List<TmdbMovie>, series : List<TmdbSerie>, actors : List<TmdbActor>) {
+fun MainScreen(films: State<List<TmdbMovie>>, series: State<List<TmdbSerie>>, actors: State<List<TmdbActor>>, nc: NavHostController, vm:ConfigViewModel) {
+
+    var searchText by remember { mutableStateOf("") }
+    var searchOpened by remember { mutableStateOf(false) }
 
 
-    val navControllerFille = rememberNavController()
     Scaffold(
         topBar = { ->
             //Barre supérieure
@@ -105,16 +115,72 @@ fun MainScreen(films : List<TmdbMovie>, series : List<TmdbSerie>, actors : List<
                  )},
 
              actions = {
-                 IconButton(
-                     onClick = { /* do something */ },
+                 if(searchOpened){
 
-              content=   {
-                     Icon(
-                         imageVector = Icons.Filled.Search,
-                         contentDescription = "Localized description"
+                     //Debut
+
+                     OutlinedTextField(
+                         value = searchText,
+                         onValueChange = { searchText = it },
+
+                         label = {
+                             if(nc.currentBackStackEntry?.destination?.route=="films"){ Text("Rechercher un film")}
+                             else if (nc.currentBackStackEntry?.destination?.route=="series"){ Text("Rechercher une série")}
+                             else if (nc.currentBackStackEntry?.destination?.route=="acteurs"){ Text("Rechercher un acteur")}
+                                 },
+                         singleLine = true,
+                         keyboardOptions = KeyboardOptions.Default.copy(
+                             keyboardType = KeyboardType.Text,
+                             imeAction = ImeAction.Search // Action associée à la touche "Entrée"
+                         ),
+                         keyboardActions = KeyboardActions(
+                             onSearch = {
+                                 // Action à exécuter lorsque la touche "Entrée" est pressée
+                                 if(nc.currentBackStackEntry?.destination?.route=="films"){vm.searchFilm(searchText = searchText)
+                                 searchText=""}
+                                 else if (nc.currentBackStackEntry?.destination?.route=="series"){vm.searchSerie(searchText = searchText) }
+                                 else if (nc.currentBackStackEntry?.destination?.route=="acteurs"){vm.searchActor(searchText = searchText) }
+                                 searchOpened = false // Fermer la barre de recherche après la recherche
+                             }
+                         ),
+                         maxLines = 1,
+                         trailingIcon = {
+                             IconButton(onClick = { searchOpened = false }) {
+                                 Icon(
+                                     imageVector = Icons.Filled.Close,
+                                     contentDescription = "Fermer"
+                                 )
+                             }
+                         }
                      )
-                 })
-             },
+                     //Fin
+
+
+
+
+
+
+
+
+                 }
+
+                 else{
+
+                     IconButton(
+                     onClick = { searchOpened=true },
+                     content=   {
+                         Icon(
+                             imageVector = Icons.Filled.Search,
+                             contentDescription = "Rechercher"
+                         )
+                     })
+                 }
+
+
+
+             }
+
+             /*Les autres paramètres*/
 
 
              )
@@ -144,7 +210,7 @@ fun MainScreen(films : List<TmdbMovie>, series : List<TmdbSerie>, actors : List<
                                 verticalArrangement = Arrangement.Center,
                                 content={
                                     IconButton(
-                                        onClick = { navControllerFille.navigate("films") },
+                                        onClick = { nc.navigate("films") },
 
                                         content=   {
                                             Icon(
@@ -165,7 +231,7 @@ fun MainScreen(films : List<TmdbMovie>, series : List<TmdbSerie>, actors : List<
                                 verticalArrangement = Arrangement.Center,
                                 content={
                                     IconButton(
-                                        onClick = { navControllerFille.navigate("series") },
+                                        onClick = { nc.navigate("series") },
 
                                         content=   {
                                             Icon(
@@ -188,7 +254,7 @@ fun MainScreen(films : List<TmdbMovie>, series : List<TmdbSerie>, actors : List<
                                 verticalArrangement = Arrangement.Center,
                                 content={
                                     IconButton(
-                                        onClick = { navControllerFille.navigate("acteurs") },
+                                        onClick = { nc.navigate("acteurs") },
 
                                         content=   {
                                             Icon(
@@ -222,20 +288,21 @@ fun MainScreen(films : List<TmdbMovie>, series : List<TmdbSerie>, actors : List<
                 verticalArrangement = Arrangement.Center
             ) {
 
-                NavHost(navController = navControllerFille, startDestination = "films") {
+                NavHost(navController = nc, startDestination = "films") {
                     composable("films") {
-                        FilmsView(nc=navControllerFille, listeFilms = films )
+                        vm.getLastMovies()
+                        FilmsView(nc = nc, listeFilms = films)
                         // Contenu de la première destination
                     }
                     composable("series") {
                         // Contenu de la deuxième destination
-
-                        SeriesView(nc=navControllerFille, listeSeries = series)
+                        vm.getLastSeries()
+                        SeriesView(nc = nc, listeSeries = series)
                     }
                     composable("acteurs") {
                         // Contenu de la deuxième destination
-
-                        ActeursView(nc=navControllerFille, listeActeurs = actors)
+                        vm.getLastActors()
+                        ActeursView(nc = nc, listeActeurs = actors)
                     }
                     composable("descriptionfilm") {
                         // Contenu de la  destination

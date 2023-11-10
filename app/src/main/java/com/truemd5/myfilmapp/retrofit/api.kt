@@ -22,7 +22,7 @@ interface ApiTMdB {
     suspend fun searchseries(@Query("api_key") api_key: String,
                              @Query("query") searchtext: String): TmdbSerieResult
 
-    @GET("search/tv")
+    @GET("search/person")
     suspend fun searchpersons(@Query("api_key") api_key: String,
                              @Query("query") searchtext: String): TmdbActorResult
 
