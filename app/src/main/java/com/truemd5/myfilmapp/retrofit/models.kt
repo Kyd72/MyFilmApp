@@ -26,7 +26,7 @@ class TmdbSerie(
     val adult: Boolean = false,
     val backdrop_path: String = "",
     val first_air_date: String= "",
-    val genre_ids: List<Int>,
+    val genre_ids: List<Int> = listOf(),
     val id: Int =0,
     val media_type: String= "",
     val name: String= "",

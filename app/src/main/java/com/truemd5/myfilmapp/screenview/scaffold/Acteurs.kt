@@ -1,4 +1,4 @@
-package com.truemd5.myfilmapp.scaffold
+package com.truemd5.myfilmapp.screenview.scaffold
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -9,10 +9,18 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.truemd5.myfilmapp.retrofit.TmdbActor
-import com.truemd5.myfilmapp.scaffold.jaquettes.jaquetteActeur
+import com.truemd5.myfilmapp.retrofit.TmdbSerie
+import com.truemd5.myfilmapp.screenview.scaffold.jaquettes.jaquetteActeur
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
-fun ActeursView(nc: NavHostController, listeActeurs: State<List<TmdbActor>>) {
+fun ActeursView(
+
+    listeActeurs: State<List<TmdbActor>>,
+    nc: NavHostController,
+    acteurToLook: MutableStateFlow<TmdbActor>
+
+) {
     LazyVerticalGrid(columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(1.dp))
@@ -21,7 +29,11 @@ fun ActeursView(nc: NavHostController, listeActeurs: State<List<TmdbActor>>) {
 
         items(listeActeurs.value){actor ->
 
-            jaquetteActeur(nomActeur = actor.name, lienCover ="https://image.tmdb.org/t/p/original"+actor.profile_path )
+            jaquetteActeur(
+                acteurToLook= acteurToLook,
+                acteurDansLaJaquette= actor,
+                nc = nc
+            )
 
         }
 

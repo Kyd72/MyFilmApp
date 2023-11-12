@@ -1,4 +1,4 @@
-package com.truemd5.myfilmapp.scaffold
+package com.truemd5.myfilmapp.screenview.scaffold
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -9,28 +9,34 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.truemd5.myfilmapp.retrofit.TmdbMovie
-import com.truemd5.myfilmapp.scaffold.jaquettes.jaquetteFilm
+import com.truemd5.myfilmapp.retrofit.TmdbSerie
+import com.truemd5.myfilmapp.screenview.scaffold.jaquettes.jaquetteSerie
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
-fun FilmsView(listeFilms: State<List<TmdbMovie>>, nc: NavHostController) {
+fun SeriesView(
 
+    listeSeries: State<List<TmdbSerie>>,
+    nc: NavHostController,
+    serieToLook: MutableStateFlow<TmdbSerie>
 
-
-
+) {
     LazyVerticalGrid(columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(1.dp))
 
     {
 
-        items(listeFilms.value){movie ->
+        items(listeSeries.value){serie ->
 
-             jaquetteFilm(titreFilm = movie.original_title, lienCover ="https://image.tmdb.org/t/p/original"+movie.poster_path, dateSortie = movie.release_date )
+            jaquetteSerie(
+                serieToLook=serieToLook,
+                serieDansLaJaquette = serie,
+                nc = nc )
 
         }
 
 
 
     }
-
 }

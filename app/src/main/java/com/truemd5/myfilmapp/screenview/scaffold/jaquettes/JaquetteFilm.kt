@@ -1,7 +1,8 @@
-package com.truemd5.myfilmapp.scaffold.jaquettes
+package com.truemd5.myfilmapp.screenview.scaffold.jaquettes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +19,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.truemd5.myfilmapp.retrofit.TmdbMovie
+import kotlinx.coroutines.flow.MutableStateFlow
 
-    @Composable
-    fun jaquetteFilm(titreFilm: String, lienCover:String? , dateSortie:String) {
+
+/**
+ * movieToLook : variable générale accessible par toutes les @Composable jacquetteFilm et dans laquelle est stockée le film
+ *               dont la description sera affichée dans le composant DescriptionFilm
+ *
+ *
+ * */
+
+@Composable
+    fun jaquetteFilm(
+                     movieToLook: MutableStateFlow<TmdbMovie>,
+                     filmDansLaJaquette : TmdbMovie,
+                     nc : NavHostController,
+
+
+
+                     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -30,21 +49,24 @@ import coil.compose.AsyncImage
                 .shadow(
                     elevation = 20.dp,
 
-                )
-                .background(color = Color.White),
+                    )
+                .background(color = Color.White)
+                .clickable { movieToLook.value=filmDansLaJaquette
+                    nc.navigate("descriptionfilm") },
             contentAlignment = Alignment.Center,
+
 
         ) {
 
             Column(horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceAround) {
                 AsyncImage(
-                    model = lienCover,
+                    model = "https://image.tmdb.org/t/p/original"+filmDansLaJaquette.poster_path,
                     contentDescription = "Ma super image"
                 )
-                Text(text = titreFilm,
+                Text(text = filmDansLaJaquette.original_title,
                     modifier = Modifier.padding(top = 12.dp))
-                Text(text = dateSortie,
+                Text(text = filmDansLaJaquette.release_date,
                     color = Color.Gray,
                     modifier = Modifier.padding(top = 12.dp))
             }

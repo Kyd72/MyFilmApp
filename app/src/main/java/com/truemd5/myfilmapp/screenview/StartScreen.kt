@@ -1,4 +1,4 @@
-package com.truemd5.myfilmapp
+package com.truemd5.myfilmapp.screenview
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
