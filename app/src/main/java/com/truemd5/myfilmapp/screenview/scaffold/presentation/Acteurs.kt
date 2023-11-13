@@ -1,4 +1,4 @@
-package com.truemd5.myfilmapp.screenview.scaffold
+package com.truemd5.myfilmapp.screenview.scaffold.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -8,46 +8,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.truemd5.myfilmapp.retrofit.TmdbMovie
-import com.truemd5.myfilmapp.screenview.scaffold.jaquettes.jaquetteFilm
+import com.truemd5.myfilmapp.retrofit.TmdbActor
+import com.truemd5.myfilmapp.retrofit.TmdbSerie
+import com.truemd5.myfilmapp.screenview.scaffold.jaquettes.jaquetteActeur
 import kotlinx.coroutines.flow.MutableStateFlow
 
-
-/**
- *
- *
- *
- * */
-
-
 @Composable
-fun FilmsView(
+fun ActeursView(
 
-    listeFilms: State<List<TmdbMovie>>,
+    listeActeurs: State<List<TmdbActor>>,
     nc: NavHostController,
-    movieToLook: MutableStateFlow<TmdbMovie>) {
+    acteurToLook: MutableStateFlow<TmdbActor>
 
-
-
-
-
-
+) {
     LazyVerticalGrid(columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(1.dp))
 
     {
 
-        items(listeFilms.value){movie ->
+        items(listeActeurs.value){actor ->
 
-             jaquetteFilm(
-                 movieToLook,movie,nc)
-
+            jaquetteActeur(
+                acteurToLook= acteurToLook,
+                acteurDansLaJaquette= actor,
+                nc = nc
+            )
 
         }
 
 
 
     }
-
 }

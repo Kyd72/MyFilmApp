@@ -10,7 +10,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.twotone.DesktopWindows
@@ -27,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,14 +43,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.truemd5.myfilmapp.configurations.ConfigViewModel
+import com.truemd5.myfilmapp.retrofit.Filmographie
 import com.truemd5.myfilmapp.retrofit.TmdbActor
 import com.truemd5.myfilmapp.retrofit.TmdbMovie
 import com.truemd5.myfilmapp.retrofit.TmdbSerie
-import com.truemd5.myfilmapp.screenview.scaffold.ActeursView
-import com.truemd5.myfilmapp.screenview.scaffold.FilmsView
-import com.truemd5.myfilmapp.screenview.scaffold.SeriesView
+import com.truemd5.myfilmapp.screenview.scaffold.presentation.ActeursView
+import com.truemd5.myfilmapp.screenview.scaffold.presentation.FilmsView
+import com.truemd5.myfilmapp.screenview.scaffold.presentation.SeriesView
 import com.truemd5.myfilmapp.screenview.scaffold.descriptions.DescriptionActeurView
 import com.truemd5.myfilmapp.screenview.scaffold.descriptions.DescriptionFilmView
+import com.truemd5.myfilmapp.screenview.scaffold.descriptions.DescriptionMixteView
 import com.truemd5.myfilmapp.screenview.scaffold.descriptions.DescriptionSerieView
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -83,6 +83,7 @@ fun MainScreen(nc: NavHostController, vm: ConfigViewModel) {
 
     val actorToLook = MutableStateFlow<TmdbActor>(TmdbActor())
 
+    val filmographieToLook = MutableStateFlow<Filmographie>(Filmographie())
 
     Scaffold(
         topBar = { ->
@@ -101,9 +102,7 @@ fun MainScreen(nc: NavHostController, vm: ConfigViewModel) {
 
                 actions = {
                     if(searchOpened){
-
                         //Debut
-
                         OutlinedTextField(
                             value = searchText,
                             onValueChange = { searchText = it },
@@ -145,14 +144,6 @@ fun MainScreen(nc: NavHostController, vm: ConfigViewModel) {
                             }
                         )
                         //Fin
-
-
-
-
-
-
-
-
                     }
 
                     else{
@@ -168,8 +159,6 @@ fun MainScreen(nc: NavHostController, vm: ConfigViewModel) {
                                         contentDescription = "Retour"
                                     )
                                 })
-
-
                         }
 
                         else {IconButton(
@@ -180,21 +169,13 @@ fun MainScreen(nc: NavHostController, vm: ConfigViewModel) {
                                     contentDescription = "Rechercher"
                                 )
                             })}
-
-
                     }
-
-
 
                 }
 
                 /*Les autres paramètres*/
 
-
             )
-
-
-
 
         },
 
@@ -327,23 +308,19 @@ fun MainScreen(nc: NavHostController, vm: ConfigViewModel) {
                             retour=true
                              DescriptionSerieView(nc =nc,serieToLook.collectAsState())
 
-
                     }
                     composable("descriptionacteur") {
                             retour=true
-                            DescriptionActeurView(nc =nc,actorToLook.collectAsState())
-
-
+                            DescriptionActeurView(nc =nc,actorToLook.collectAsState(),filmographieToLook)
                     }
 
+                    composable("descriptionmixte") {
+                        retour=true
+                        DescriptionMixteView(nc =nc,filmographieToLook.collectAsState())
+                    }
                 }
-
             }
         },
-
         //modifier = Modifier.systemBarsPadding()
-
     )
-
-
 }

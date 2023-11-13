@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -25,18 +23,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.truemd5.myfilmapp.retrofit.TmdbMovie
+import com.truemd5.myfilmapp.retrofit.Filmographie
 import com.truemd5.myfilmapp.retrofit.TmdbSerie
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DescriptionSerieView(nc : NavHostController, mv: State<TmdbSerie>)  {
+fun DescriptionMixteView(nc : NavHostController, mv: State<Filmographie>)  {
     val pagerState = rememberPagerState(pageCount = { 2 })
     val coroutineScope = rememberCoroutineScope()
 
@@ -44,13 +41,12 @@ fun DescriptionSerieView(nc : NavHostController, mv: State<TmdbSerie>)  {
         "https://image.tmdb.org/t/p/original"+mv.value.poster_path, // URL de la première image
         "https://image.tmdb.org/t/p/original"+mv.value.backdrop_path// URL de la deuxième image
     )
-    val scrollState = rememberScrollState()
+
 
 
 
     Column(
-        modifier = Modifier.padding(16.dp).
-                     verticalScroll(scrollState)
+        modifier = Modifier.padding(16.dp)
     ) {
 
 
@@ -129,6 +125,11 @@ fun DescriptionSerieView(nc : NavHostController, mv: State<TmdbSerie>)  {
             style = MaterialTheme.typography.bodySmall
         )
 
+        Text(
+            text = mv.value.original_title,
+            style = MaterialTheme.typography.bodySmall
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
 
         // Date de sortie
@@ -137,10 +138,17 @@ fun DescriptionSerieView(nc : NavHostController, mv: State<TmdbSerie>)  {
             style = MaterialTheme.typography.bodySmall
         )
 
+        //Date de première diffusion
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Date de 1ere diffusion : ${mv.value.release_date}",
+            style = MaterialTheme.typography.bodySmall
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
 
         // Synopsis
-
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -149,6 +157,7 @@ fun DescriptionSerieView(nc : NavHostController, mv: State<TmdbSerie>)  {
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+
 
     }
 

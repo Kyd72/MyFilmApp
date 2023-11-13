@@ -1,4 +1,4 @@
-package com.truemd5.myfilmapp.screenview.scaffold
+package com.truemd5.myfilmapp.screenview.scaffold.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
