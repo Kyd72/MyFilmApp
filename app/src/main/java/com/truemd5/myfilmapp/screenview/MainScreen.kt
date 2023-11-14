@@ -302,7 +302,7 @@ fun MainScreen(nc: NavHostController, vm: ConfigViewModel) {
                     }
                     composable("descriptionfilm") {
                             retour=true
-                            DescriptionFilmView(nc =nc,movieToLook.collectAsState())
+                            DescriptionFilmView(nc =nc,movieToLook.collectAsState(),vm=vm, acteurToLook = actorToLook)
                     }
                     composable("descriptionserie") {
                             retour=true

@@ -3,6 +3,7 @@ package com.truemd5.myfilmapp.configurations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.truemd5.myfilmapp.retrofit.ApiTMdB
+import com.truemd5.myfilmapp.retrofit.MovieDetail
 import com.truemd5.myfilmapp.retrofit.TmdbActor
 import com.truemd5.myfilmapp.retrofit.TmdbMovie
 import com.truemd5.myfilmapp.retrofit.TmdbSerie
@@ -27,6 +28,10 @@ class ConfigViewModel: ViewModel() {
     val series = MutableStateFlow<List<TmdbSerie>>(listOf())
 
     val actors = MutableStateFlow<List<TmdbActor>>(listOf())
+
+    val moviedetails = MutableStateFlow<MovieDetail>(MovieDetail())
+
+
 
 
 
@@ -64,6 +69,13 @@ class ConfigViewModel: ViewModel() {
             actors.value = api.searchpersons(api_key, searchText).results
         }
     }
+
+    fun searchMovieDetails(id : String) {
+        viewModelScope.launch {
+            moviedetails.value = api.movieDetails(id=id,api_key)
+        }
+    }
+
 
 
 }

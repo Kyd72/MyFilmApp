@@ -1,6 +1,7 @@
 package com.truemd5.myfilmapp.screenview.scaffold.descriptions
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -42,11 +45,12 @@ fun DescriptionMixteView(nc : NavHostController, mv: State<Filmographie>)  {
         "https://image.tmdb.org/t/p/original"+mv.value.backdrop_path// URL de la deuxième image
     )
 
-
+    val scrollState: ScrollState = rememberScrollState()
 
 
     Column(
         modifier = Modifier.padding(16.dp)
+            .verticalScroll(scrollState)
     ) {
 
 
@@ -134,7 +138,7 @@ fun DescriptionMixteView(nc : NavHostController, mv: State<Filmographie>)  {
 
         // Date de sortie
         Text(
-            text = "Date de 1ere diffusion : ${mv.value.first_air_date}",
+            text = "Date de sortie : ${mv.value.first_air_date}",
             style = MaterialTheme.typography.bodySmall
         )
 

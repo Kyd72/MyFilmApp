@@ -40,9 +40,11 @@ interface ApiTMdB {
 
 
     @GET("movie/{id}")
-    suspend fun movieDetails(@Path("id") id: String
-                             ,@Query("language") langue : String="fr"
-    ): TmdbMovie
+    suspend fun movieDetails(@Path("id") id: String,
+                             @Query("api_key") api_key: String,
+                             @Query("language") langue : String="fr",
+                             @Query("append_to_response") c : String="credits"
+    ): MovieDetail
 
     @GET("tv/{id}?")
     suspend fun serieDetails(@Path("id") id: String
