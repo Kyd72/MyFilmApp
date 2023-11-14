@@ -53,13 +53,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 
-@SuppressLint("SuspiciousIndentation")
+@SuppressLint("SuspiciousIndentation", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalFoundationApi::class)
     @Composable
     fun DescriptionFilmView(nc : NavHostController, mv:  State<TmdbMovie>, vm: ConfigViewModel,
                             acteurToLook : MutableStateFlow<TmdbActor>) {
         val pagerState = rememberPagerState(pageCount = { 2 })
-        val coroutineScope = rememberCoroutineScope()
+    val pagerStateD = rememberPagerState(pageCount = { vm.moviedetails.value.credits.cast.size })
+
+    val coroutineScope = rememberCoroutineScope()
 
         vm.searchMovieDetails(id=mv.value.id,)
 
@@ -74,11 +76,11 @@ import kotlinx.coroutines.launch
 
 
 
-
         Column(
                 modifier = Modifier
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
+
 
             ) {
 
@@ -180,7 +182,7 @@ import kotlinx.coroutines.launch
                 )
 
 
-                LazyVerticalGrid(columns = GridCells.Fixed(2),
+              /*  LazyVerticalGrid(columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(1.dp))
 
@@ -199,7 +201,26 @@ import kotlinx.coroutines.launch
 
 
                     }
-                }
+                }*/
+
+            HorizontalPager(
+                state = pagerStateD,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+            ) {act ->
+                // Première image de couverture
+
+                jaquetteActeur(
+                    acteurToLook= acteurToLook,
+                    acteurDansLaJaquette= vm.moviedetails.collectAsState().value.credits.cast[act].toTmdbActor(),
+                    nc = nc
+                )
+
+
+            }
+
+
             }
 
 
