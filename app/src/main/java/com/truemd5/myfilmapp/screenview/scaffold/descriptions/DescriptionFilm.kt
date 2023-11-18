@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -33,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -57,7 +60,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
     @Composable
     fun DescriptionFilmView(nc : NavHostController, mv:  State<TmdbMovie>, vm: ConfigViewModel,
-                            acteurToLook : MutableStateFlow<TmdbActor>) {
+                            acteurToLook : MutableStateFlow<TmdbActor>, taille :WindowSizeClass) {
         val pagerState = rememberPagerState(pageCount = { 2 })
     val pagerStateD = rememberPagerState(pageCount = { vm.moviedetails.value.credits.cast.size })
 
@@ -153,7 +156,7 @@ import kotlinx.coroutines.launch
                 // Titre
                 Text(
                     text = mv.value.original_title,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.titleMedium
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -182,43 +185,114 @@ import kotlinx.coroutines.launch
                 )
 
 
-              /*  LazyVerticalGrid(columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(1.dp))
-
-                {
-
-                    items(vm.moviedetails.value.credits.cast){actor ->
-
-                        jaquetteActeur(
-                            acteurToLook= acteurToLook,
-                            acteurDansLaJaquette= actor.toTmdbActor(),
-                            nc = nc
-                        )
-
-
-
-
-
-                    }
-                }*/
 
             HorizontalPager(
                 state = pagerStateD,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(400.dp)
             ) {act ->
                 // Première image de couverture
+
+
 
                 jaquetteActeur(
                     acteurToLook= acteurToLook,
                     acteurDansLaJaquette= vm.moviedetails.collectAsState().value.credits.cast[act].toTmdbActor(),
-                    nc = nc
+                    nc = nc,
+                    taille =taille
                 )
 
 
             }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                IconButton(
+
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerStateD.animateScrollToPage(pagerStateD.currentPage - 1)}
+
+                    }
+
+                    ,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp),
+                    enabled = pagerStateD.currentPage > 0
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Previous",
+                        tint = if (pagerStateD.currentPage > 0) MaterialTheme.colorScheme
+                            .onBackground.copy(alpha = 0.6f) else MaterialTheme.colorScheme
+                            .onBackground.copy(alpha = 0.2f)
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {pagerStateD.animateScrollToPage(pagerStateD.currentPage + 1)} },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp),
+                    enabled = pagerStateD.currentPage < pagerStateD.pageCount - 1
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Next",
+                        tint = if (pagerStateD.currentPage < pagerStateD.pageCount - 1) MaterialTheme.colorScheme
+                            .onBackground.copy(alpha = 0.6f) else MaterialTheme.
+                        colorScheme.onBackground.copy(alpha = 0.2f)
+                    )
+                }
+            }
+
+           /* Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                IconButton(
+
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerStateD.animateScrollToPage(pagerStateD.currentPage - 1)} }
+
+                    ,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp),
+                    enabled = pagerStateD.currentPage > 0
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Previous",
+                        tint = if (pagerStateD.currentPage > 0) MaterialTheme.colorScheme
+                            .onBackground.copy(alpha = 0.6f) else MaterialTheme.colorScheme
+                            .onBackground.copy(alpha = 0.2f)
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {pagerStateD.animateScrollToPage(pagerStateD.currentPage + 1)} },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp),
+                    enabled = pagerStateD.currentPage < pagerStateD.pageCount - 1
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Next",
+                        tint = if (pagerStateD.currentPage < pagerStateD.pageCount - 1) MaterialTheme.colorScheme
+                            .onBackground.copy(alpha = 0.6f) else MaterialTheme.
+                        colorScheme.onBackground.copy(alpha = 0.2f)
+                    )
+                }
+            }*/
 
 
             }

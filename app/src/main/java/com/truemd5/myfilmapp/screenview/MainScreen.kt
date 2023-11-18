@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -70,20 +71,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(nc: NavHostController, vm: ConfigViewModel) {
+fun MainScreen(nc: NavHostController, vm: ConfigViewModel, taille : WindowSizeClass) {
 
     var searchText by remember { mutableStateOf("") }
     var searchOpened by remember { mutableStateOf(false) }
     var retour by remember { mutableStateOf(false) }
 
 
-    val movieToLook = MutableStateFlow<TmdbMovie>(TmdbMovie())
+    val movieToLook = vm.movieToLook
+        //MutableStateFlow<TmdbMovie>(TmdbMovie())
 
-    val serieToLook = MutableStateFlow<TmdbSerie>(TmdbSerie())
+    val serieToLook = vm.serieToLook
+        //MutableStateFlow<TmdbSerie>(TmdbSerie())
 
-    val actorToLook = MutableStateFlow<TmdbActor>(TmdbActor())
+    val actorToLook = vm.actorToLook
+        //MutableStateFlow<TmdbActor>(TmdbActor())
 
-    val filmographieToLook = MutableStateFlow<Filmographie>(Filmographie())
+    val filmographieToLook = vm.filmographieToLook
+        //MutableStateFlow<Filmographie>(Filmographie())
 
     Scaffold(
         topBar = { ->
@@ -287,26 +292,26 @@ fun MainScreen(nc: NavHostController, vm: ConfigViewModel) {
                 NavHost(navController = nc, startDestination = "films") {
                     composable("films") {
                         retour=false
-                        FilmsView(nc = nc, listeFilms = vm.movies.collectAsState(), movieToLook=movieToLook)
+                        FilmsView(nc = nc, listeFilms = vm.movies.collectAsState(), movieToLook=movieToLook, taille =  taille)
                         // Contenu de la première destination
                     }
                     composable("series") {
                         retour=false
                         // Contenu de la deuxième destination
-                        SeriesView(nc = nc, listeSeries = vm.series.collectAsState(), serieToLook = serieToLook )
+                        SeriesView(nc = nc, listeSeries = vm.series.collectAsState(), serieToLook = serieToLook, taille =  taille )
                     }
                     composable("acteurs") {
                         retour=false
                         // Contenu de la deuxième destination
-                        ActeursView(nc = nc, listeActeurs = vm.actors.collectAsState(), acteurToLook = actorToLook )
+                        ActeursView(nc = nc, listeActeurs = vm.actors.collectAsState(), acteurToLook = actorToLook , taille =  taille)
                     }
                     composable("descriptionfilm") {
                             retour=true
-                            DescriptionFilmView(nc =nc,movieToLook.collectAsState(),vm=vm, acteurToLook = actorToLook)
+                            DescriptionFilmView(nc =nc,movieToLook.collectAsState(),vm=vm, acteurToLook = actorToLook, taille)
                     }
                     composable("descriptionserie") {
                             retour=true
-                             DescriptionSerieView(nc =nc,serieToLook.collectAsState())
+                             DescriptionSerieView(nc =nc,vm=vm, mv =serieToLook.collectAsState(), acteurToLook=actorToLook, taille )
 
                     }
                     composable("descriptionacteur") {

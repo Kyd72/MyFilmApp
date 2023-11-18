@@ -22,29 +22,42 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.truemd5.myfilmapp.configurations.ConfigViewModel
+import com.truemd5.myfilmapp.retrofit.TmdbActor
 import com.truemd5.myfilmapp.retrofit.TmdbMovie
 import com.truemd5.myfilmapp.retrofit.TmdbSerie
+import com.truemd5.myfilmapp.retrofit.toTmdbActor
+import com.truemd5.myfilmapp.screenview.scaffold.jaquettes.jaquetteActeur
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DescriptionSerieView(nc : NavHostController, mv: State<TmdbSerie>)  {
+fun DescriptionSerieView(nc : NavHostController, vm: ConfigViewModel, mv: State<TmdbSerie>,
+                         acteurToLook : MutableStateFlow<TmdbActor>, taille : WindowSizeClass)  {
     val pagerState = rememberPagerState(pageCount = { 2 })
     val coroutineScope = rememberCoroutineScope()
+    val coroutineScope2 = rememberCoroutineScope()
+
+    val pagerStateD = rememberPagerState(pageCount = { vm.seriedetails.value.credits.cast.size })
+
 
     val pages = listOf(
         "https://image.tmdb.org/t/p/original"+mv.value.poster_path, // URL de la première image
         "https://image.tmdb.org/t/p/original"+mv.value.backdrop_path// URL de la deuxième image
     )
     val scrollState = rememberScrollState()
+    vm.searchSerieDetails(id=mv.value.id.toString(),)
 
 
 
@@ -126,7 +139,7 @@ fun DescriptionSerieView(nc : NavHostController, mv: State<TmdbSerie>)  {
         // Titre
         Text(
             text = mv.value.name,
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.titleMedium
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -148,6 +161,76 @@ fun DescriptionSerieView(nc : NavHostController, mv: State<TmdbSerie>)  {
                 text = mv.value.overview,
                 style = MaterialTheme.typography.bodyMedium
             )
+        }
+
+        Text(
+            text = "Principaux acteurs",
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(modifier = Modifier.height(8.dp)
+        )
+
+        HorizontalPager(
+            state = pagerStateD,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp)
+        ) {act ->
+            // Première image de couverture
+
+            jaquetteActeur(
+                acteurToLook= acteurToLook,
+                acteurDansLaJaquette= vm.seriedetails.collectAsState().value.credits.cast[act].toTmdbActor(),
+                nc = nc,
+                taille = taille
+            )
+
+
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            IconButton(
+
+                onClick = {
+                    coroutineScope.launch {
+                        pagerStateD.animateScrollToPage(pagerStateD.currentPage - 1)}
+
+                          }
+
+                ,
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(8.dp),
+                enabled = pagerStateD.currentPage > 0
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Previous",
+                    tint = if (pagerStateD.currentPage > 0) MaterialTheme.colorScheme
+                        .onBackground.copy(alpha = 0.6f) else MaterialTheme.colorScheme
+                        .onBackground.copy(alpha = 0.2f)
+                )
+            }
+
+            IconButton(
+                onClick = {
+                    coroutineScope.launch {pagerStateD.animateScrollToPage(pagerStateD.currentPage + 1)} },
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(8.dp),
+                enabled = pagerStateD.currentPage < pagerStateD.pageCount - 1
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Next",
+                    tint = if (pagerStateD.currentPage < pagerStateD.pageCount - 1) MaterialTheme.colorScheme
+                        .onBackground.copy(alpha = 0.6f) else MaterialTheme.
+                    colorScheme.onBackground.copy(alpha = 0.2f)
+                )
+            }
         }
 
     }

@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,35 +28,73 @@ fun jaquetteActeur(
 
     acteurToLook: MutableStateFlow<TmdbActor>,
     acteurDansLaJaquette : TmdbActor,
-    nc : NavHostController
+    nc : NavHostController,
+    taille : WindowSizeClass
 
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .shadow(
-                elevation = 20.dp,
 
+    when (taille.heightSizeClass) {
+
+        //couché
+        WindowHeightSizeClass.Compact->{ Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .shadow(
+                    elevation = 20.dp,
+
+                    )
+                .background(color = Color.White)
+                .clickable { acteurToLook.value=acteurDansLaJaquette
+                    nc.navigate("descriptionacteur") },
+            contentAlignment = Alignment.Center,
+
+            ) {
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceAround) {
+                AsyncImage(
+                    model = "https://image.tmdb.org/t/p/original"+acteurDansLaJaquette.profile_path,
+                    contentDescription = "Photo de l'acteur",
+                    modifier = Modifier.height(150.dp)
                 )
-            .background(color = Color.White)
-            .clickable { acteurToLook.value=acteurDansLaJaquette
-                nc.navigate("descriptionacteur") },
-        contentAlignment = Alignment.Center,
+                Text(text = acteurDansLaJaquette.name,
+                    modifier = Modifier.padding(top = 12.dp))
 
-        ) {
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceAround) {
-            AsyncImage(
-                model = "https://image.tmdb.org/t/p/original"+acteurDansLaJaquette.profile_path,
-                contentDescription = "Photo de l'acteur"
-            )
-            Text(text = acteurDansLaJaquette.name,
-                modifier = Modifier.padding(top = 12.dp))
-
-        }
+            }
 
 
+        }}
+        //debout
+        WindowHeightSizeClass.Medium->{ Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .shadow(
+                    elevation = 20.dp,
+
+                    )
+                .background(color = Color.White)
+                .clickable { acteurToLook.value=acteurDansLaJaquette
+                    nc.navigate("descriptionacteur") },
+            contentAlignment = Alignment.Center,
+
+            ) {
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceAround) {
+                AsyncImage(
+                    model = "https://image.tmdb.org/t/p/original"+acteurDansLaJaquette.profile_path,
+                    contentDescription = "Photo de l'acteur",
+                    modifier = Modifier.height(300.dp)
+                )
+                Text(text = acteurDansLaJaquette.name,
+                    modifier = Modifier.padding(top = 12.dp))
+
+            }
+
+
+        }}
     }
+
 }

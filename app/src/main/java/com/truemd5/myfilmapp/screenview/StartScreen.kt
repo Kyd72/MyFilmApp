@@ -15,7 +15,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,49 +34,13 @@ import com.truemd5.myfilmapp.R
 
 
 @Composable
-    fun StartView(nc : NavHostController) {
+    fun StartView(nc : NavHostController, taille :WindowSizeClass) {
+
+responsivePresentation(taille = taille, nc = nc)
 
 
 
 
-
-
-
-
-
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-
-            Column(
-            ) {
-                AsyncImage(
-                    model="https://img.over-blog-kiwi.com/1/48/26/66/20150220/ob_20887a_cochon.jpg",
-                    contentDescription = "Photo de MD5",
-                    modifier = Modifier
-                        .size(200.dp)
-                        .clip(CircleShape)
-
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "TrueMD5", fontSize = 20.sp)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "Alternant en e-santé", fontSize = 16.sp, fontStyle = FontStyle.Italic)
-                Spacer(modifier = Modifier.height(24.dp))
-                mesAdresses()
-                Spacer(modifier = Modifier.height(9.dp))
-                Button(onClick = { nc.navigate("accueil") }) {
-                    Text("Bienvenue, Commencer")
-                }            }
-
-
-
-
-        }
     }
 
 @Composable
@@ -108,12 +76,88 @@ fun mesAdresses(){
     Column(modifier = Modifier.padding(horizontal = 15.dp, vertical = 30.dp), horizontalAlignment = Alignment.Start) {
         monAdresse1()
         monAdresse2()
-
     }
 
 
 
 
+}
+
+@Composable
+fun monProfil(){
+
+    AsyncImage(
+        model="https://img.over-blog-kiwi.com/1/48/26/66/20150220/ob_20887a_cochon.jpg",
+        contentDescription = "Photo de MD5",
+        modifier = Modifier
+            .size(200.dp)
+            .clip(CircleShape)
+
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(text = "TrueMD5", fontSize = 20.sp)
+    Spacer(modifier = Modifier.height(4.dp))
+    Text(text = "Alternant en e-santé", fontSize = 16.sp, fontStyle = FontStyle.Italic)
+
+
+
+}
+
+@Composable
+fun monBouton(nc: NavHostController){
+
+    Button(onClick = { nc.navigate("accueil") }) {
+        Text("Bienvenue, Commencer")
+    }
+}
+
+@Composable
+fun responsivePresentation( taille : WindowSizeClass, nc: NavHostController){
+
+    when (taille.heightSizeClass) {
+        WindowHeightSizeClass.Medium -> {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Column {
+                    monProfil()
+                    Spacer(modifier = Modifier.height(24.dp))
+                    mesAdresses()
+                    Spacer(modifier = Modifier.height(9.dp))
+                    monBouton(nc = nc)
+
+
+
+                }
+
+
+
+
+            }
+
+        } /* debout */
+
+
+        WindowHeightSizeClass.Compact-> {
+
+            Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+
+                Row( verticalAlignment = Alignment.CenterVertically) {
+                    monProfil()
+                    mesAdresses()
+                    monBouton(nc)
+                }
+
+            }
+
+
+        } /* couché */
+    }
 }
 
 

@@ -3,7 +3,9 @@ package com.truemd5.myfilmapp.configurations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.truemd5.myfilmapp.retrofit.ApiTMdB
+import com.truemd5.myfilmapp.retrofit.Filmographie
 import com.truemd5.myfilmapp.retrofit.MovieDetail
+import com.truemd5.myfilmapp.retrofit.SerieDetail
 import com.truemd5.myfilmapp.retrofit.TmdbActor
 import com.truemd5.myfilmapp.retrofit.TmdbMovie
 import com.truemd5.myfilmapp.retrofit.TmdbSerie
@@ -13,6 +15,17 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 class ConfigViewModel: ViewModel() {
+
+
+    val movieToLook = MutableStateFlow<TmdbMovie>(TmdbMovie())
+
+    val serieToLook = MutableStateFlow<TmdbSerie>(TmdbSerie())
+
+    val actorToLook = MutableStateFlow<TmdbActor>(TmdbActor())
+
+    val filmographieToLook = MutableStateFlow<Filmographie>(Filmographie())
+
+
 
     val retrof=  Retrofit.Builder()
             .baseUrl("https://api.themoviedb.org/3/")
@@ -30,6 +43,10 @@ class ConfigViewModel: ViewModel() {
     val actors = MutableStateFlow<List<TmdbActor>>(listOf())
 
     val moviedetails = MutableStateFlow<MovieDetail>(MovieDetail())
+
+    val seriedetails = MutableStateFlow<SerieDetail>(SerieDetail())
+
+
 
 
 
@@ -73,6 +90,12 @@ class ConfigViewModel: ViewModel() {
     fun searchMovieDetails(id : String) {
         viewModelScope.launch {
             moviedetails.value = api.movieDetails(id=id,api_key)
+        }
+    }
+
+    fun searchSerieDetails(id : String) {
+        viewModelScope.launch {
+            seriedetails.value = api.serieDetails(id=id,api_key)
         }
     }
 
